@@ -15,12 +15,15 @@
 package set
 
 import (
+	"io"
+
+	"fmt"
+
 	"github.com/atomix/go-framework/pkg/atomix/node"
 	"github.com/atomix/go-framework/pkg/atomix/service"
 	"github.com/atomix/go-framework/pkg/atomix/stream"
 	"github.com/atomix/go-framework/pkg/atomix/util"
 	"github.com/golang/protobuf/proto"
-	"io"
 )
 
 func init() {
@@ -91,6 +94,7 @@ func (s *Service) Contains(bytes []byte) ([]byte, error) {
 
 // Add adds an element to the set
 func (s *Service) Add(bytes []byte) ([]byte, error) {
+	fmt.Println("Add is called")
 	request := &AddRequest{}
 	if err := proto.Unmarshal(bytes, request); err != nil {
 		return nil, err
@@ -115,6 +119,7 @@ func (s *Service) Add(bytes []byte) ([]byte, error) {
 
 // Remove removes an element from the set
 func (s *Service) Remove(bytes []byte) ([]byte, error) {
+	fmt.Println("Removed is called")
 	request := &RemoveRequest{}
 	if err := proto.Unmarshal(bytes, request); err != nil {
 		return nil, err
@@ -122,7 +127,7 @@ func (s *Service) Remove(bytes []byte) ([]byte, error) {
 
 	if _, ok := s.values[request.Value]; ok {
 		delete(s.values, request.Value)
-
+		fmt.Println("Set values", s.values)
 		s.sendEvent(&ListenResponse{
 			Type:  ListenResponse_REMOVED,
 			Value: request.Value,

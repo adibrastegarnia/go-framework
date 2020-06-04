@@ -17,13 +17,15 @@ package server
 import (
 	"context"
 	"errors"
+	"fmt"
+	"time"
+
 	"github.com/atomix/api/proto/atomix/headers"
 	"github.com/atomix/api/proto/atomix/primitive"
 	"github.com/atomix/go-framework/pkg/atomix/node"
 	"github.com/atomix/go-framework/pkg/atomix/service"
 	streams "github.com/atomix/go-framework/pkg/atomix/stream"
 	"github.com/golang/protobuf/proto"
-	"time"
 )
 
 // Server is a base server for servers that support sessions
@@ -35,6 +37,7 @@ type Server struct {
 // DoCommand submits a command to the service
 func (s *Server) DoCommand(ctx context.Context, name string, input []byte, header *headers.RequestHeader) ([]byte, *headers.ResponseHeader, error) {
 	// If the client requires a leader and is not the leader, return an error
+	fmt.Println("Do command is called")
 	partition := s.Protocol.Partition(int(header.Partition))
 	if partition.MustLeader() && !partition.IsLeader() {
 		return nil, &headers.ResponseHeader{

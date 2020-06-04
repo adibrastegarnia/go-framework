@@ -18,12 +18,13 @@ import (
 	"container/list"
 	"encoding/binary"
 	"fmt"
-	streams "github.com/atomix/go-framework/pkg/atomix/stream"
-	"github.com/atomix/go-framework/pkg/atomix/util"
-	"github.com/gogo/protobuf/proto"
 	"io"
 	"strings"
 	"time"
+
+	streams "github.com/atomix/go-framework/pkg/atomix/stream"
+	"github.com/atomix/go-framework/pkg/atomix/util"
+	"github.com/gogo/protobuf/proto"
 )
 
 // NewManager returns an initialized Manager
@@ -254,15 +255,19 @@ func (m *Manager) Command(bytes []byte, stream streams.WriteStream) {
 }
 
 func (m *Manager) applyCommand(request *SessionCommandRequest, stream streams.WriteStream) {
+	fmt.Println("Apply command is called")
 	session, ok := m.sessions[request.Context.SessionID]
 	if !ok {
+		fmt.Println("Inside !OK apply command")
 		util.SessionEntry(m.context.Node(), request.Context.SessionID).
 			Warn("Unknown session")
 		stream.Error(fmt.Errorf("unknown session %d", request.Context.SessionID))
 		stream.Close()
 	} else {
+		fmt.Println("Inside else")
 		sequenceNumber := request.Context.SequenceNumber
 		if sequenceNumber != 0 && sequenceNumber <= session.commandSequence {
+			fmt.Println("Inside if sequence number", sequenceNumber, session.commandSequence)
 			result, ok := session.getResult(sequenceNumber)
 			if ok {
 				stream.Send(result)

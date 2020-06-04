@@ -16,6 +16,8 @@ package set
 
 import (
 	"context"
+	"fmt"
+
 	"github.com/atomix/api/proto/atomix/headers"
 	api "github.com/atomix/api/proto/atomix/set"
 	"github.com/atomix/go-framework/pkg/atomix/node"
@@ -134,7 +136,7 @@ func (s *Server) Add(ctx context.Context, request *api.AddRequest) (*api.AddResp
 
 // Remove removes an element from the set
 func (s *Server) Remove(ctx context.Context, request *api.RemoveRequest) (*api.RemoveResponse, error) {
-	log.Tracef("Received RemoveRequest %+v", request)
+	log.Tracef("Received RemoveRequest test %+v", request)
 	in, err := proto.Marshal(&RemoveRequest{
 		Value: request.Value,
 	})
@@ -152,11 +154,13 @@ func (s *Server) Remove(ctx context.Context, request *api.RemoveRequest) (*api.R
 		return nil, err
 	}
 
+	fmt.Println("Remove out:", removeResponse.Removed)
+
 	response := &api.RemoveResponse{
 		Header:  header,
 		Removed: removeResponse.Removed,
 	}
-	log.Tracef("Sending RemoveResponse %+v", response)
+	log.Tracef("Sending RemoveResponse test %+v", response)
 	return response, nil
 }
 
